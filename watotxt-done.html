@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Text Processing</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>Text Processing</h1>
+    <form id="textForm">
+      <div class="form-group">
+        <label for="textInput">Input Text:</label>
+        <textarea class="form-control" id="textInput" rows="5"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Process</button>
+    </form>
+
+    <h2>Result:</h2>
+    <div id="result"></div>
+    <button id="copyButton" class="btn btn-secondary" data-clipboard-target="#result">Copy Result</button>
+  </div>
+
+  <!-- Bootstrap JS and ClipboardJS -->
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
+
+  <script>
+    $(document).ready(function() {
+  // Initialize ClipboardJS
+  var clipboard = new ClipboardJS('#copyButton');
+
+  // Process the text on form submission
+  $('#textForm').on('submit', function(e) {
+    e.preventDefault();
+    var text = $('#textInput').val();
+
+    // Step 1: Split the text by "["
+    var splitByBracket = text.split('[');
+
+    // Step 2: Remove new lines from the text
+    var textWithoutNewLines = splitByBracket.map(function(line) {
+      return line.replace(/\n/g, '');
+    });
+
+    // Step 3: Split the text by ": " and only take the 2nd array
+    var output = textWithoutNewLines.map(function(line) {
+      var splitByColon = line.split(': ');
+      return splitByColon[1];
+    });
+
+    // Remove undefined entries from the output array
+    output = output.filter(function(item) {
+      return item !== undefined;
+    });
+
+    // Step 4: Display the output
+    var resultHtml = '';
+    output.forEach(function(line) {
+      resultHtml += '<p>' + line + ';</p>';
+    });
+    $('#result').html(resultHtml);
+  });
+
+  // Add success message after copying
+  clipboard.on('success', function(e) {
+    $('#copyButton').text('Copied!');
+    e.clearSelection();
+  });
+
+  // Reset copy button text
+  $('#copyButton').on('mouseleave', function() {
+    $(this).text('Copy Result');
+  });
+});
+
+  </script>
+</body>
+</html>
